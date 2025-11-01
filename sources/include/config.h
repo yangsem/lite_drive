@@ -6,6 +6,8 @@
 
 namespace lite_drive
 {
+namespace utilities
+{
 
 class IConfig
 {
@@ -20,6 +22,12 @@ public:
     static IConfig* Create();
 
     /**
+     * @brief 销毁配置对象
+     * @param pConfig 配置指针
+     */
+    static void Destroy(IConfig *pConfig);
+
+    /**
      * @brief 加载配置文件
      * @param pConfigFile 配置文件路径
      * @return 0表示成功,否则失败
@@ -31,13 +39,20 @@ public:
      * @param pConfigFile 配置文件路径
      * @return 0表示成功,否则失败
      */
-    virtual int32_t Save(const char* pConfigFile) = 0;
+    virtual int32_t Save(const char* pConfigFile = nullptr) const = 0;
 
     /**
      * @brief 转换为字符串
      * @return 字符串
      */
     virtual std::string ToString() const = 0;
+
+    /**
+     * @brief 复制配置
+     * @param pConfig 配置
+     * @return 0表示成功,否则失败
+     */
+    virtual int32_t Copy(const IConfig *pConfig) = 0;
 
     /**
      * @brief 设置布尔值
@@ -113,5 +128,5 @@ public:
 };
 
 }
-
+}
 #endif // __LITE_DRIVE_CONFIG_H__
