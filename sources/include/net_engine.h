@@ -120,23 +120,14 @@ protected:
     virtual ~IListener() = default;
 
 public:
-    /**
-     * @brief 启动线程监听网络事件
-     * @return 0表示成功，否则表示异常
-     */
-    virtual int32_t Start() = 0;
-
-    /**
-     * @brief 停止线程监听
-     */
-    virtual void Stop() = 0;
+    
 };
 
 template<typename T>
 struct Handler
 {
     uint64_t uID; // 句柄ID
-    T *pData; // 句柄数据
+    T *pHandler; // 句柄数据
 };
 
 using ConnectionHandler = Handler<IConnection>;
@@ -274,11 +265,11 @@ public:
 
 namespace config
 {
-
 /* ============================== 网络引擎配置 ============================== */
 constexpr const char *kSection = "net_engine";            // 配置文件中的节名，类型: string
 constexpr const char *kNetEngineType = "net_engine_type"; // 网络引擎类型，类型: string
 constexpr const char *kNetEngineName = "net_engine_name"; // 网络引擎名称，类型: string
+constexpr const char *kIOThreadCount = "io_thread_count"; // IO线程数量，类型: uint32_t
 
 /* ============================== 网络引擎Listener配置 ============================== */
 constexpr const char *kListenerName = "listener_name"; // 监听器名称，类型: string
@@ -294,6 +285,29 @@ constexpr const char *kConnectionRemotePort = "connection_remote_port"; // 远�
 constexpr const char *kSocketBufferBytes = "socket_buffer_bytes";     // 套接字缓冲区字节大小，类型: uint32_t
 constexpr const char *kHeartbeatIntervalMs = "heartbeat_interval_ms"; // 心跳间隔，类型: uint32_t
 constexpr const char *kHeartbeatTimeoutMs = "heartbeat_timeout_ms";   // 心跳超时，类型: uint32_t
+}
+
+namespace default_value
+{
+/* ============================== 网络引擎公共默认值 ============================== */
+constexpr const char *kNetEngineType = "tcp"; // 网络引擎类型，默认TCP
+constexpr const char *kNetEngineName = "anonymous_net_engine"; // 网络引擎名称，默认匿名网络引擎
+constexpr const uint32_t kIOThreadCount = 1; // IO线程数量，默认1
+
+/* ============================== 网络引擎Listener默认值 ============================== */
+constexpr const char *kListenerName = "anonymous_listener"; // 监听器名称，默认匿名监听器
+constexpr const char *kListenerIP = "0.0.0.0"; // 监听器IP地址，默认所有IP
+constexpr const uint32_t kListenerPort = 8080; // 监听器端口，默认8080
+
+/* ============================== 网络引擎Connection默认值 ============================== */
+constexpr const char *kConnectionName = "anonymous_connection"; // 连接名称，默认匿名连接
+constexpr const char *kConnectionRemoteIP = "127.0.0.1"; // 远程服务器IP地址，默认127.0.0.1
+constexpr const uint32_t kConnectionRemotePort = 8080; // 远程服务器端口，默认8080
+
+/* ============================== 网络引擎公共默认值 ============================== */
+constexpr const uint32_t kSocketBufferBytes = 0; // 套接字缓冲区字节大小，默认不设置,使用系统默认值
+constexpr const uint32_t kHeartbeatIntervalMs = 1000; // 心跳间隔，默认1秒
+constexpr const uint32_t kHeartbeatTimeoutMs = 30000; // 心跳超时，默认30秒
 }
 
 }

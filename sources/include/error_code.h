@@ -12,6 +12,7 @@ enum ErrorCode : int32_t
     kSuccess = 0,
     kEvent,
     kInvalidParam,
+    kInvalidCall,
     kThrowException,
     kNoMemory,
 

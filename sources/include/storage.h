@@ -2,7 +2,6 @@
 #define __LITE_DRIVE_STORAGE_H__
 
 #include "config.h"
-#include <string>
 #include <vector>
 
 namespace lite_drive
@@ -87,7 +86,7 @@ template<typename T>
 struct Handler
 {
     uint64_t uID; // 句柄ID
-    T *pData;     // 句柄数据
+    T *pHandler;     // 句柄数据
 };
 
 using FileHandler = Handler<IFile>;
@@ -109,7 +108,7 @@ public:
      * @param pConfig 配置
      * @return 0表示成功,否则失败
      */
-    virtual int32_t Init(IConfig *pConfig) = 0;
+    virtual int32_t Init(utilities::IConfig *pConfig) = 0;
 
     /**
      * @brief 退出存储对象

@@ -152,7 +152,7 @@ public:
         wrap_detail::FormatValue(m_szBuffer, Size, value);
     }
 
-    const char * operator()() const { return m_szBuffer; }
+    operator const char *() const { return m_szBuffer; }
 
 private:
     char m_szBuffer[Size];
@@ -172,11 +172,11 @@ using WrapB = Wrap<8, bool>;
 
 // 自动类型推断宏：根据参数类型自动选择对应的Wrap实现
 // 使用方式：Wrap(a) 会自动推断类型并返回对应的Wrap实例
-#define Wrap(value)                                             \
+#define Wrap(val)                                             \
     (::lite_drive::logger::Wrap<                                \
         ::lite_drive::logger::wrap_detail::SizeHelper<          \
-            typename std::decay<decltype(value)>::type>::value, \
-        typename std::decay<decltype(value)>::type>(value))
+            typename std::decay<decltype(val)>::type>::value, \
+        typename std::decay<decltype(val)>::type>(val))
 
 
 /* ============================== 日志宏 ============================== */
