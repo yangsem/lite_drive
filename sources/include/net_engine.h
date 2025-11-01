@@ -10,6 +10,8 @@ namespace lite_drive
 namespace net_engine
 {
 
+constexpr const char *kModuleName = "net_engine"; // 模块名称
+
 struct IMessage
 {
 public:
@@ -205,12 +207,18 @@ public:
     static INetEngine* Create(logger::ILogger *pLogger);
 
     /**
+     * @brief 销毁网络引擎
+     * @param pNetEngine 网络引擎指针
+     */
+    static void Destroy(INetEngine *pNetEngine);
+
+    /**
      * @brief 初始化网络引擎
      * @param pConfig 配置
      * @param pGlobalCallback 全局回调
      * @return 0表示成功,否则失败
      */
-    virtual int32_t Init(IConfig *pConfig, ICallback *pGlobalCallback) = 0;
+    virtual int32_t Init(utilities::IConfig *pConfig, ICallback *pGlobalCallback) = 0;
 
     /**
      * @brief 退出网络引擎
@@ -234,7 +242,7 @@ public:
      * @param pCallback 回调
      * @return 监听器句柄,失败返回NULL
      */
-    virtual ListenerHandler CreateListener(IConfig *pConfig, ICallback *pCallback) = 0;
+    virtual ListenerHandler CreateListener(utilities::IConfig *pConfig, ICallback *pCallback) = 0;
 
     /**
      * @brief 销毁监听器
@@ -248,7 +256,7 @@ public:
      * @param pCallback 回调
      * @return 连接句柄,失败返回NULL
      */
-    virtual ConnectionHandler CreateConnection(IConfig *pConfig, ICallback *pCallback) = 0;
+    virtual ConnectionHandler CreateConnection(utilities::IConfig *pConfig, ICallback *pCallback) = 0;
 
     /**
      * @brief 销毁连接

@@ -42,7 +42,7 @@ public:
      * @param pConfig 配置
      * @return 0表示成功,否则失败
      */
-    virtual int32_t Init(IConfig *pConfig) = 0;
+    virtual int32_t Init(utilities::IConfig *pConfig) = 0;
 
     /**
      * @brief 退出日志器
@@ -82,11 +82,14 @@ public:
      * @brief 记录日志
      * @param iErrorNo 错误编号
      * @param eLevel 日志级别
+     * @param pModuleName 模块名称
+     * @param pFileLine 文件行号
+     * @param pFunction 函数名称
      * @param fmt 格式化字符串, 格式："this is a test {0} {1} {2}"
      * @param ppParams 参数数组, 格式：{"test", "test2", "test3"}
      * @param uParamCount 参数数量
      */
-    virtual void Log(int32_t iErrorNo, LogLevel eLevel, const char *fmt, const char **ppParams, uint32_t uParamCount) = 0;
+    virtual void Log(int32_t iErrorNo, LogLevel eLevel, const char *pModuleName, const char *pFileLine, const char *pFunction, const char *fmt, const char **ppParams, uint32_t uParamCount) = 0;
 };
 
 namespace wrap_detail
@@ -175,20 +178,28 @@ using WrapB = Wrap<8, bool>;
             typename std::decay<decltype(value)>::type>::value, \
         typename std::decay<decltype(value)>::type>(value))
 
-#define LOG_BASE(logger, eLevel, iErrorNo, fmt, ...)                               \
-{                                                                                  \
-char pParams[] = {__VA_ARGS__};                                                    \
-logger->Log(iErrorNo, eLevel, fmt, pParams, sizeof(pParams) / sizeof(pParams[0])); \
-}
 
 /* ============================== 日志宏 ============================== */
-#define LOG_TRACE(logger, iErrorNo, fmt, ...) LOG_BASE(logger, LogLevel::kTrace, iErrorNo, fmt, __VA_ARGS__) // 跟踪
-#define LOG_DEBUG(logger, iErrorNo, fmt, ...) LOG_BASE(logger, LogLevel::kDebug, iErrorNo, fmt, __VA_ARGS__) // 调试
-#define LOG_INFO(logger, iErrorNo, fmt, ...) LOG_BASE(logger, LogLevel::kInfo, iErrorNo, fmt, __VA_ARGS__)   // 信息
-#define LOG_WARN(logger, iErrorNo, fmt, ...) LOG_BASE(logger, LogLevel::kWarn, iErrorNo, fmt, __VA_ARGS__)   // 警告
-#define LOG_ERROR(logger, iErrorNo, fmt, ...) LOG_BASE(logger, LogLevel::kError, iErrorNo, fmt, __VA_ARGS__) // 错误
-#define LOG_FATAL(logger, iErrorNo, fmt, ...) LOG_BASE(logger, LogLevel::kFatal, iErrorNo, fmt, __VA_ARGS__) // 致命错误
-#define LOG_EVENT(logger, iErrorNo, fmt, ...) LOG_BASE(logger, LogLevel::kEvent, iErrorNo, fmt, __VA_ARGS__) // 事件
+#define _TO_STRING(x) #x
+#define _TO_STRING2(x) _TO_STRING(x)
+#define _POSITION_STRING __FILE__ ":" _TO_STRING2(__LINE__), __FUNCTION__
+
+#define LOG_BASE(_logger, eLevel, iErrorNo, fmt, ...)                                                                                  \
+    {                                                                                                                                  \
+        if (_logger != nullptr && eLevel >= _logger->GetLogLevel())                                                                    \
+        {                                                                                                                              \
+            const char *pParams[] = {"", ##__VA_ARGS__};                                                                               \
+            _logger->Log(iErrorNo, eLevel, kModuleName, _POSITION_STRING, fmt, &pParams[1], sizeof(pParams) / sizeof(pParams[0]) - 1); \
+        }                                                                                                                              \
+    }
+
+#define LOG_TRACE(_logger, iErrorNo, fmt, ...) LOG_BASE(_logger, logger::LogLevel::kTrace, iErrorNo, fmt, ##__VA_ARGS__) // 跟踪
+#define LOG_DEBUG(_logger, iErrorNo, fmt, ...) LOG_BASE(_logger, logger::LogLevel::kDebug, iErrorNo, fmt, ##__VA_ARGS__) // 调试
+#define LOG_INFO(_logger, iErrorNo, fmt, ...) LOG_BASE(_logger, logger::LogLevel::kInfo, iErrorNo, fmt, ##__VA_ARGS__)   // 信息
+#define LOG_WARN(_logger, iErrorNo, fmt, ...) LOG_BASE(_logger, logger::LogLevel::kWarn, iErrorNo, fmt, ##__VA_ARGS__)   // 警告
+#define LOG_ERROR(_logger, iErrorNo, fmt, ...) LOG_BASE(_logger, logger::LogLevel::kError, iErrorNo, fmt, ##__VA_ARGS__) // 错误
+#define LOG_FATAL(_logger, iErrorNo, fmt, ...) LOG_BASE(_logger, logger::LogLevel::kFatal, iErrorNo, fmt, ##__VA_ARGS__) // 致命
+#define LOG_EVENT(_logger, iErrorNo, fmt, ...) LOG_BASE(_logger, logger::LogLevel::kEvent, iErrorNo, fmt, ##__VA_ARGS__) // 事件
 
 namespace config
 {
