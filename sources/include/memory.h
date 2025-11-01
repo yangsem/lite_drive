@@ -6,7 +6,7 @@
 
 namespace lite_drive
 {
-namespace memory
+namespace utilities
 {
 
 class IMemory
@@ -20,6 +20,12 @@ public:
      * @return 内存对象指针,失败返回NULL
      */
     static IMemory* Create();
+
+    /**
+     * @brief 销毁内存对象
+     * @param pMemory 内存对象指针
+     */
+    static void Destroy(IMemory *pMemory);
 
     /**
      * @brief 初始化内存对象
@@ -39,13 +45,13 @@ public:
      * @param uSize 内存大小
      * @return 内存指针,失败返回NULL
      */
-    virtual void *Alloc(uint32_t uSize) = 0;
+    virtual void *New(uint32_t uSize) = 0;
 
     /**
      * @brief 释放内存
      * @param pMem 内存指针
      */
-    virtual void Free(void *pMem) = 0;
+    virtual void Delete(void *pMem) = 0;
 
     /**
      * @brief 获取内存大小
