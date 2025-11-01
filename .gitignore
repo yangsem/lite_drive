@@ -36,9 +36,17 @@
 *.exe
 *.out
 *.app
+bin
 
 # debug information files
 *.dwo
 
 #vscode
 .vscode
+
+# cmake
+build
+
+# clangd
+compile_commands.json
+.cache
